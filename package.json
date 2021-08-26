@@ -1,27 +1,27 @@
 {
-  "name": "dsctickets.demo-plugin",
+  "name": "dsctickets.text-transcripts",
   "version": "1.0.0",
-  "description": "A demo plugin for Discord Tickets",
+  "description": "A basic text transcripts plugin Discord Tickets",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/eartharoid/discord-tickets-demo-plugin.git"
+    "url": "git+https://github.com/discord-tickets/text-transcripts.git"
   },
   "author": "eartharoid",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/eartharoid/discord-tickets-demo-plugin/issues"
+    "url": "https://github.com/discord-tickets/text-transcripts/issues"
   },
-  "homepage": "https://github.com/eartharoid/discord-tickets-demo-plugin#readme",
+  "homepage": "https://github.com/discord-tickets/text-transcripts#readme",
   "dependencies": {
-    "@eartharoid/i18n": "^0.0.1",
-    "discord.js": "^12.5.1",
+    "@eartharoid/dtf": "^2.0.0",
+    "discord.js": "^13.1.0",
     "fs-extra": "^9.1.0"
   },
   "devDependencies": {
-    "eslint": "^7.21.0"
+    "eslint": "^7.32.0"
   }
 }
