@@ -54,7 +54,6 @@ Due to its simplicity, this plugin does not support localisation and is only ava
 		update_notice: true
 	};
 	```
-## Configuration
 
 ## Support
 
