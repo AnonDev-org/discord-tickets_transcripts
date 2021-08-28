@@ -1,7 +1,7 @@
 {
   "name": "dsctickets.text-transcripts",
   "version": "1.0.0",
-  "description": "A basic text transcripts plugin Discord Tickets",
+  "description": "A basic text transcripts plugin Discord Tickets.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
