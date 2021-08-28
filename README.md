@@ -1,4 +1,4 @@
-# Discord Tickets: Text Transcripts
+# Text Transcripts
 
 A simple plugin for Discord Tickets which adds basics text transcripts.
 
