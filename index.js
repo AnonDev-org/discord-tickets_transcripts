@@ -1,9 +1,6 @@
 const DTF = require('@eartharoid/dtf');
 const dtf = new DTF();
-const {
-	MessageAttachment,
-	MessageEmbed
-} = require('discord.js');
+const { MessageAttachment } = require('discord.js');
 
 module.exports = Plugin => class DemoPlugin extends Plugin {
 	constructor(client, id) {
@@ -26,26 +23,29 @@ module.exports = Plugin => class DemoPlugin extends Plugin {
 			const guild = await this.client.db.models.Guild.findOne({ where: { id: category.guild } });
 			if (!guild) return;
 
-			const lines = [];
 			const creator = await this.client.db.models.UserEntity.findOne({
 				where: {
 					ticket: id,
 					user: ticket.creator
 				}
 			});
+			if (!creator) return this.client.log.warn(`Can't creat text transcript for ticket #${ticket.number} due to missing creator`);
 
-			if (creator) lines.push(`Ticket ${ticket.number}, created by ${this.client.cryptr.decrypt(creator.username)}#${creator.discriminator}, ${ticket.createdAt}\n`);
+			const lines = [];
+			lines.push(`Ticket ${ticket.number}, created by ${this.client.cryptr.decrypt(creator.username)}#${creator.discriminator}, ${ticket.createdAt}\n`);
+
+			let closer;
 
 			if (ticket.closed_by) {
-				const closer = await this.client.db.models.UserEntity.findOne({
+				closer = await this.client.db.models.UserEntity.findOne({
 					where: {
 						ticket: id,
 						user: ticket.closed_by
 					}
 				});
-
-				if (closer) lines.push(`Closed by ${this.client.cryptr.decrypt(closer.username)}#${closer.discriminator}, ${ticket.updatedAt}\n`);
 			}
+
+			if (closer) lines.push(`Closed by ${this.client.cryptr.decrypt(closer.username)}#${closer.discriminator}, ${ticket.updatedAt}\n`);
 
 			const messages = await this.client.db.models.Message.findAll({ where: { ticket: id } });
 
@@ -84,23 +84,21 @@ module.exports = Plugin => class DemoPlugin extends Plugin {
 				try {
 					const log_channel = await this.client.channels.fetch(this.config.channels[guild.id]);
 					await log_channel.send({
-						embeds: [
-							new MessageEmbed()
-								.setColor(guild.colour)
-								.setTitle(`Ticket ${ticket.number} closed by ${this.client.cryptr.decrypt(creator.username)}#${creator.discriminator}`)
-						],
+						content: closer ? `Ticket ${ticket.number} closed by <@${ticket.closed_by}>` : `Ticket ${ticket.number} closed`,
 						files: [attachment]
 					});
-				} catch {
+				} catch (error) {
 					this.client.log.warn('Failed to send text transcript to the guild\'s log channel');
+					this.client.log.error(error);
 				}
 			}
 
 			try {
 				const user = await this.client.users.fetch(ticket.creator);
 				user.send({ files: [attachment] });
-			} catch {
+			} catch (error) {
 				this.client.log.warn('Failed to send text transcript to the ticket creator');
+				this.client.log.error(error);
 			}
 
 		});
