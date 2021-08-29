@@ -1,6 +1,9 @@
 const DTF = require('@eartharoid/dtf');
 const dtf = new DTF();
-const { MessageAttachment } = require('discord.js');
+const {
+	MessageAttachment,
+	MessageEmbed
+} = require('discord.js');
 
 module.exports = Plugin => class DemoPlugin extends Plugin {
 	constructor(client, id) {
@@ -74,17 +77,29 @@ module.exports = Plugin => class DemoPlugin extends Plugin {
 			}
 
 
-			const file_name = (category.name_format + '.txt')
+			const channel_name = category.name_format
 				.replace(/{+\s?(user)?name\s?}+/gi, this.client.cryptr.decrypt(creator.display_name))
 				.replace(/{+\s?num(ber)?\s?}+/gi, ticket.number);
 
-			const attachment = new MessageAttachment(Buffer.from(lines.join('\n')), file_name);
+			const attachment = new MessageAttachment(Buffer.from(lines.join('\n')), channel_name + '.txt');
 
 			if (this.config.channels[guild.id]) {
 				try {
+					const g = await this.client.guilds.fetch(guild.id);
+					const embed = new MessageEmbed()
+						.setColor(guild.colour)
+						.setTitle(`#${channel_name} closed`)
+						.addField('Creator', `<@${ticket.creator}>`)
+						.setTimestamp()
+						.setFooter(guild.footer, g.iconURL());
+
+					if (closer) embed.addField('Closed by', `<@${ticket.closed_by}>`);
+					if (ticket.topic) embed.addField('Topic', `\`${this.client.cryptr.decrypt(ticket.topic)}\``);
+					if (ticket.closed_reason) embed.addField('Closed reason', `\`${this.client.cryptr.decrypt(ticket.closed_reason)}\``);
+
 					const log_channel = await this.client.channels.fetch(this.config.channels[guild.id]);
 					await log_channel.send({
-						content: closer ? `Ticket ${ticket.number} closed by <@${ticket.closed_by}>` : `Ticket ${ticket.number} closed`,
+						embed,
 						files: [attachment]
 					});
 				} catch (error) {
