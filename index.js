@@ -32,7 +32,7 @@ module.exports = Plugin => class DemoPlugin extends Plugin {
 					user: ticket.creator
 				}
 			});
-			if (!creator) return this.client.log.warn(`Can't creat text transcript for ticket #${ticket.number} due to missing creator`);
+			if (!creator) return this.client.log.warn(`Can't create text transcript for ticket #${ticket.number} due to missing creator`);
 
 			const lines = [];
 			lines.push(`Ticket ${ticket.number}, created by ${this.client.cryptr.decrypt(creator.username)}#${creator.discriminator}, ${ticket.createdAt}\n`);
