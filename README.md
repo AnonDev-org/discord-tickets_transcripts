@@ -1,18 +1,19 @@
-# Text Transcripts
+# Discord Tickets Transcripts
 
-A simple plugin for Discord Tickets which adds basics text transcripts.
+A simple plugin for Discord Tickets which adds ticket transcript and ticket close logging.
+It's made for [Discord tickets bot](https://discordtickets.app/)
 
 ## Supported versions
 
 This plugin has been tested on Discord Tickets versions:
 
-- 3.0
+- 3.1.x
 
 It may not work on versions not listed above.
 
 ## Features
 
-If `log_messages` is enabled, this plugin sends a text file to the ticket creator (and to a log channel if configured) when a ticket is closed.
+If `log_messages` is enabled, this plugin sends embed with ticket transcript to log channel and to ticket creator (optional).
 
 ### Commands
 
@@ -30,11 +31,11 @@ Due to its simplicity, this plugin does not support localisation and is only ava
 
 ## Installation
 
-1. Run `npm i dsctickets.text-transcripts --no-save`
+1. Run `npm i AnonDev-org.discord-tickets_text-transcripts --no-save`
 2. Add `dsctickets.text-transcripts` to the `plugins` array in your bot's config file (`./user/config.js`):
 	```js
 	plugins: [
-		'dsctickets.text-transcripts'
+		'AnonDev-org.discord-tickets_text-transcripts'
 	]
 	``` 
 3. Add a new property to your config file:
@@ -44,7 +45,7 @@ Due to its simplicity, this plugin does not support localisation and is only ava
 		defaults: {
 			// ...
 		},
-		'dsctickets.text-transcripts': {
+		'AnonDev-org.discord-tickets_text-transcripts': {
 			channels: {
 				'<GUILD ID>': '<TEXT CHANNEL ID'
 			}
@@ -55,6 +56,14 @@ Due to its simplicity, this plugin does not support localisation and is only ava
 	};
 	```
 
-## Support
+### Information
 
-This is an officially maintained plugin, so you can [get support here](https://github.com/discord-tickets/bot/#support).
+Improved fork of [this](https://github.com/discord-tickets/text-transcripts) plugin.
+Developed by [AnonDev](https://anon.is-a.dev)
+
+If you need help you can open new modmail support thread on [Pinglik Support Server](https://go.anondev.ml/pinglik-support) and we will help you 😉
+
+
+If you would like to support me:<br>
+
+<a  href='https://ko-fi.com/J3J72WPRC'  target='__blank'><img  height='36'  style='border:0px;height:36px;'  src='https://cdn.ko-fi.com/cdn/kofi2.png?v=2'  border='0'  alt='Buy Me a Coffee at ko-fi.com'  /></a>
