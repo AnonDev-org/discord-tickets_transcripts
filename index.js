@@ -29,6 +29,7 @@ module.exports = (Plugin) =>
           where: { id: category.guild },
         });
         if (!guild) return;
+        if(this.config.disabled_servers ||[].includes(guild.id)) return
 
         const creator = await this.client.db.models.UserEntity.findOne({
           where: {
@@ -147,7 +148,7 @@ module.exports = (Plugin) =>
                 `\`${this.client.cryptr.decrypt(ticket.closed_reason)}\``,
                 true
               );
-             if(this.client.config.disabled_servers || [].includes(guild.id)) return
+
             const log_channel = await this.client.channels.fetch(
               this.config.channels[guild.id]
             );
@@ -175,14 +176,13 @@ module.exports = (Plugin) =>
                 this.client.log.warn(
                   "Failed to upload ticket transcript to hastebin"
                 );
-                this.client.log.error(error);
+                this.client.log.error(err);
               });
 
               embed.addField("Transcript", `[here](${haste})`, true);
               transcript = { embed };
             }
-            if (!transcript)
-              return this.client.log.warn("Transcript object is missing");
+            if (!transcript) return this.client.log.warn("Transcript object is missing");
             log_channel.send(transcript);
           } catch (error) {
             this.client.log.warn(
