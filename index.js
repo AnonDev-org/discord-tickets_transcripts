@@ -52,7 +52,7 @@ module.exports = (Plugin) =>
             creator.username
           )}#${creator.discriminator} (${
             ticket.creator || "?"
-          })\nCreated (opened) at: ${ticket.createdAt}\n`
+          })\nCreated (opened) at: ${ticket.createdAt}`
         );
         if (ticket.closed_by) {
           closer = await this.client.db.models.UserEntity.findOne({
@@ -67,19 +67,19 @@ module.exports = (Plugin) =>
           lines.push(
             `Closed by: ${this.client.cryptr.decrypt(closer.username)}#${
               closer.discriminator
-            } (${ticket.closed_by || "?"})\nClosed at: ${ticket.updatedAt}\n`
+            } (${ticket.closed_by || "?"})\nClosed at: ${ticket.updatedAt}`
           );
         if (ticket.topic)
-          lines.push(`Topic: ${this.client.cryptr.decrypt(ticket.topic)}\n`);
+          lines.push(`Topic: ${this.client.cryptr.decrypt(ticket.topic)}`);
         if (ticket.closed_reason)
           lines.push(
             `Close reason: ${this.client.cryptr.decrypt(
               ticket.closed_reason
-            )}\n`
+            )}`
           );
 
         lines.push(
-          `--------------------------------------------------------------------\n`
+          `--------------------------------------------------------------------`
         );
 
         const messages = await this.client.db.models.Message.findAll({
@@ -112,7 +112,7 @@ module.exports = (Plugin) =>
             content += "\n\t[embedded content]";
           });
           lines.push(
-            `[${timestamp}] ${display_name} (${username}#${user.discriminator}): ${content}\n`
+            `[${timestamp}] ${display_name} (${username}#${user.discriminator}): ${content}`
           );
         }
 
@@ -171,6 +171,7 @@ module.exports = (Plugin) =>
               const hastebin = require("hastebin-gen");
 
               const haste = await hastebin(lines.join("\n"), {
+                url: this.config.hastebin_url ? this.config.hastebin_url : "https://hastebin.com",
                 extension: "txt",
               }).catch((err) => {
                 this.client.log.warn(
