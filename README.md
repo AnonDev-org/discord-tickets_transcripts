@@ -50,7 +50,8 @@ Due to its simplicity, this plugin does not support localisation and is only ava
 				'<GUILD ID>': '<TEXT CHANNEL ID'
 			},
 			type : "hastebin", // attachment or hastebin
-			send_to_user: false // true or false
+			send_to_user: false, // true or false
+			disabled_servers: [] // array of servers where you don't want to log transcripts
 			
 		},
 		locale: 'en-GB',
