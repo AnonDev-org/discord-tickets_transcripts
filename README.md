@@ -48,7 +48,10 @@ Due to its simplicity, this plugin does not support localisation and is only ava
 		'AnonDev-org.discord-tickets_text-transcripts': {
 			channels: {
 				'<GUILD ID>': '<TEXT CHANNEL ID'
-			}
+			},
+			type : "hastebin", // attachment or hastebin
+			send_to_user: false // true or false
+			
 		},
 		locale: 'en-GB',
 		// ...
