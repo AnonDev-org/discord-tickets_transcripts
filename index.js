@@ -165,7 +165,7 @@ module.exports = (Plugin) =>
                 "Uploaded as attachment below",
                 true
               );
-              transcript = { embed, files: [attachment] };
+              transcript = { embeds: [embed], files: [attachment] };
             }
             if (this.config.type && this.config.type == "hastebin") {
               const hastebin = require("hastebin-gen");
@@ -180,7 +180,7 @@ module.exports = (Plugin) =>
               });
 
               embed.addField("Transcript", `[here](${haste})`, true);
-              transcript = { embed };
+              transcript = { embeds: [embed] };
             }
             if (!transcript) return this.client.log.warn("Transcript object is missing");
             log_channel.send(transcript);
