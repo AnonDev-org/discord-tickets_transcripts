@@ -147,10 +147,11 @@ module.exports = (Plugin) =>
                 `\`${this.client.cryptr.decrypt(ticket.closed_reason)}\``,
                 true
               );
-
+             if(this.client.config.disabled_servers || [].includes(guild.id)) return
             const log_channel = await this.client.channels.fetch(
               this.config.channels[guild.id]
             );
+            if(!log_channel) return
             let transcript;
 
             if (this.config.type && this.config.type == "attachment") {
