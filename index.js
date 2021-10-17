@@ -1,6 +1,8 @@
 const DTF = require("@eartharoid/dtf");
 const dtf = new DTF();
 const { MessageAttachment, MessageEmbed } = require("discord.js");
+const fetch = require('node-fetch');
+const url = require('url');
 
 module.exports = (Plugin) =>
   class DemoPlugin extends Plugin {
@@ -211,3 +213,25 @@ module.exports = (Plugin) =>
 
     load() {}
   };
+
+
+
+const hastebin = async (code, format, domain) => {
+  const response = await fetch(`${domain}/documents`, {
+    method: 'POST',
+    body: code.toString()
+  });
+
+  if (response.ok) {
+    const { key } = await response.json();
+    const parsedURL = url.parse(`${domain}/${key}.${format}`);
+    return parsedURL;
+  } else {
+    throw new Error(
+      `Could not PORT to ${domain}/documents (status: ${
+        response.status
+      })`
+    );
+  }
+};
+
