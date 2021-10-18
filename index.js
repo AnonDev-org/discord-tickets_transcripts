@@ -1,8 +1,8 @@
 const DTF = require("@eartharoid/dtf");
 const dtf = new DTF();
 const { MessageAttachment, MessageEmbed } = require("discord.js");
-const fetch = require('node-fetch');
-const url = require('url');
+const fetch = require("node-fetch");
+const url = require("url");
 
 module.exports = (Plugin) =>
   class DemoPlugin extends Plugin {
@@ -31,7 +31,7 @@ module.exports = (Plugin) =>
           where: { id: category.guild },
         });
         if (!guild) return;
-        if(this.config.disabled_servers ||[].includes(guild.id)) return
+        if (this.config.disabled_servers || [].includes(guild.id)) return;
 
         const creator = await this.client.db.models.UserEntity.findOne({
           where: {
@@ -46,7 +46,11 @@ module.exports = (Plugin) =>
 
         const lines = [];
         let closer;
-
+        let ticketCreatedAt = dtf.fill(
+          "DD-MM-YYYY HH:mm:ss",
+          new Date(ticket.createdAt),
+          true
+        );
         lines.push(
           `Ticket Transcript\n--------------------------------------------------------------------\nID: ${
             ticket.number
@@ -54,7 +58,7 @@ module.exports = (Plugin) =>
             creator.username
           )}#${creator.discriminator} (${
             ticket.creator || "?"
-          })\nCreated (opened) at: ${ticket.createdAt}`
+          })\nCreated (opened) at: ${ticketCreatedAt}`
         );
         if (ticket.closed_by) {
           closer = await this.client.db.models.UserEntity.findOne({
@@ -65,20 +69,26 @@ module.exports = (Plugin) =>
           });
         }
 
-        if (closer)
+        if (closer) {
+          let ticketClosedAt = dtf.fill(
+            "DD-MM-YYYY HH:mm:ss",
+            new Date(ticket.updatedAt),
+            true
+          );
           lines.push(
             `Closed by: ${this.client.cryptr.decrypt(closer.username)}#${
               closer.discriminator
-            } (${ticket.closed_by || "?"})\nClosed at: ${ticket.updatedAt}`
+            } (${ticket.closed_by || "?"})\nClosed at: ${ticketClosedAt}`
           );
-        if (ticket.topic)
+        }
+        if (ticket.topic) {
           lines.push(`Topic: ${this.client.cryptr.decrypt(ticket.topic)}`);
-        if (ticket.closed_reason)
+        }
+        if (ticket.closed_reason) {
           lines.push(
-            `Close reason: ${this.client.cryptr.decrypt(
-              ticket.closed_reason
-            )}`
+            `Close reason: ${this.client.cryptr.decrypt(ticket.closed_reason)}`
           );
+        }
 
         lines.push(
           `--------------------------------------------------------------------`
@@ -154,7 +164,7 @@ module.exports = (Plugin) =>
             const log_channel = await this.client.channels.fetch(
               this.config.channels[guild.id]
             );
-            if(!log_channel) return
+            if (!log_channel) return;
             let transcript;
 
             if (this.config.type && this.config.type == "attachment") {
@@ -170,8 +180,13 @@ module.exports = (Plugin) =>
               transcript = { embeds: [embed], files: [attachment] };
             }
             if (this.config.type && this.config.type == "hastebin") {
-              
-              const haste = await uploadToHastebin(lines.join("\n"), this.config.hastebin_url ? this.config.hastebin_url : "https://hastebin.com", "txt").catch((err) => {
+              const haste = await uploadToHastebin(
+                lines.join("\n"),
+                this.config.hastebin_url
+                  ? this.config.hastebin_url
+                  : "https://hastebin.com",
+                "txt"
+              ).catch((err) => {
                 this.client.log.warn(
                   "Failed to upload ticket transcript to hastebin"
                 );
@@ -180,7 +195,8 @@ module.exports = (Plugin) =>
               embed.addField("Transcript", `[here](${haste})`, true);
               transcript = { embeds: [embed] };
             }
-            if (!transcript) return this.client.log.warn("Transcript object is missing");
+            if (!transcript)
+              return this.client.log.warn("Transcript object is missing");
             log_channel.send(transcript);
           } catch (error) {
             this.client.log.warn(
@@ -209,12 +225,10 @@ module.exports = (Plugin) =>
     load() {}
   };
 
-
-
 const uploadToHastebin = async (code, domain, format) => {
   const response = await fetch(`${domain}/documents`, {
-    method: 'POST',
-    body: code.toString()
+    method: "POST",
+    body: code.toString(),
   });
 
   if (response.ok) {
@@ -223,10 +237,7 @@ const uploadToHastebin = async (code, domain, format) => {
     return parsedURL;
   } else {
     throw new Error(
-      `Could not PORT to ${domain}/documents (status: ${
-        response.status
-      })`
+      `Could not PORT to ${domain}/documents (status: ${response.status})`
     );
   }
 };
-
