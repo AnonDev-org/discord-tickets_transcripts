@@ -32,11 +32,11 @@ Due to its simplicity, this plugin does not support localisation and is only ava
 
 ## Installation
 
-1. Run `npm i AnonDev-org/discord-tickets_text-transcripts --no-save`
-2. Add `dsctickets.text-transcripts` to the `plugins` array in your bot's config file (`./user/config.js`):
+1. Run `npm i AnonDev-org/discord-tickets_transcripts --no-save`
+2. Add `AnonDev-org.discord-tickets_transcripts` to the `plugins` array in your bot's config file (`./user/config.js`):
    ```js
    plugins: [
-   	'AnonDev-org.discord-tickets_text-transcripts'
+   	'AnonDev-org.discord-tickets_transcripts'
    ]
    ```
 3. Add a new property to your config file:
@@ -46,7 +46,7 @@ Due to its simplicity, this plugin does not support localisation and is only ava
    	defaults: {
    		// ...
    	},
-   	'AnonDev-org.discord-tickets_text-transcripts': {
+   	'AnonDev-org.discord-tickets_transcripts': {
    		channels: {
    			'<GUILD ID>': '<GUILD CHANNEL ID>'
    		},
