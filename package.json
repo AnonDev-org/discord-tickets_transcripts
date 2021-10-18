@@ -1,6 +1,6 @@
 {
   "name": "AnonDev-org.discord-tickets_text-transcripts",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A simple plugin for Discord Tickets which adds ticket transcript and ticket close logging.",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/discord-tickets/text-transcripts.git"
   },
-  "author": "AnonDev (anon.is-a.dev)",
+  "author": "AnonDev (https://anon.is-a.dev/)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/AnonDev-org/discord-tickets_transcripts/issues"
