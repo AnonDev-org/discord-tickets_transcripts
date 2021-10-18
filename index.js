@@ -99,7 +99,7 @@ module.exports = (Plugin) =>
           if (!user) continue;
 
           const timestamp = dtf.fill(
-            "YYYY-MM-DD HH:mm:ss",
+            "DD-MM-YYYY HH:mm:ss",
             new Date(ticket.createdAt),
             true
           );
@@ -170,18 +170,13 @@ module.exports = (Plugin) =>
               transcript = { embeds: [embed], files: [attachment] };
             }
             if (this.config.type && this.config.type == "hastebin") {
-              const hastebin = require("hastebin-gen");
-
-              const haste = await hastebin(lines.join("\n"), {
-                url: this.config.hastebin_url ? this.config.hastebin_url : "https://hastebin.com",
-                extension: "txt",
-              }).catch((err) => {
+              
+              const haste = await uploadToHastebin(lines.join("\n"), this.config.hastebin_url ? this.config.hastebin_url : "https://hastebin.com", "txt").catch((err) => {
                 this.client.log.warn(
                   "Failed to upload ticket transcript to hastebin"
                 );
                 this.client.log.error(err);
               });
-
               embed.addField("Transcript", `[here](${haste})`, true);
               transcript = { embeds: [embed] };
             }
@@ -216,7 +211,7 @@ module.exports = (Plugin) =>
 
 
 
-const hastebin = async (code, format, domain) => {
+const uploadToHastebin = async (code, domain, format) => {
   const response = await fetch(`${domain}/documents`, {
     method: 'POST',
     body: code.toString()
@@ -224,7 +219,7 @@ const hastebin = async (code, format, domain) => {
 
   if (response.ok) {
     const { key } = await response.json();
-    const parsedURL = url.parse(`${domain}/${key}.${format}`);
+    const parsedURL = url.parse(`${domain}/${key}.${format ? format : "txt"}`);
     return parsedURL;
   } else {
     throw new Error(
