@@ -232,6 +232,7 @@ const uploadToHastebin = async (code, domain, format) => {
   });
 
   if (response.ok) {
+    console.log(response.json())
     const { key } = await response.json();
     console.log(key)
     const parsedURL = url.parse(`${domain}/${key}.${format ? format : "txt"}`);
