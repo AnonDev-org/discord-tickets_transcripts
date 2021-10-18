@@ -235,7 +235,7 @@ const uploadToHastebin = async (code, domain, format) => {
     const { key } = await response.json();
     console.log(key)
     const parsedURL = url.parse(`${domain}/${key}.${format ? format : "txt"}`);
-    this.client.log.info(`Uploaded transcript to hastebin server`, parsedURL)
+  //  this.client.log.info(`Uploaded transcript to hastebin server`, parsedURL)
     return parsedURL;
   } else {
     throw new Error(
