@@ -226,10 +226,13 @@ module.exports = (Plugin) =>
   };
 
 const uploadToHastebin = async (code, domain, format) => {
+  var FormData = require('form-data');
+  var formdata = new FormData();
+  formdata.append('data', code);
   const response = await fetch(`${domain}/documents`, {
     method: "POST",
-    body: code.toString(),
-    headers: { "Content-Type": "text/plain" }
+    body: formdata ,
+    headers: { "Content-Type": "multipart/form-data" }
   });
 
   if (response.ok) {
