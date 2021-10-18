@@ -174,7 +174,7 @@ module.exports = (Plugin) =>
               );
               embed.addField(
                 "Transcript",
-                "Uploaded as attachment below",
+                "*Uploaded as attachment below*",
                 true
               );
               transcript = { embeds: [embed], files: [attachment] };
@@ -233,7 +233,9 @@ const uploadToHastebin = async (code, domain, format) => {
 
   if (response.ok) {
     const { key } = await response.json();
+    console.log(key)
     const parsedURL = url.parse(`${domain}/${key}.${format ? format : "txt"}`);
+    this.client.log.info(`Uploaded transcript to hastebin server`, parsedURL)
     return parsedURL;
   } else {
     throw new Error(
