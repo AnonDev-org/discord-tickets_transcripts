@@ -1,7 +1,7 @@
 
 # Discord Tickets Transcripts
 
-A simple plugin for Discord Tickets which adds ticket transcript and ticket close logging.
+A simple plugin for Discord Tickets which adds ticket transcripts (with ticket close logging).
 It's made for [Discord tickets bot](https://discordtickets.app/)
 
 ## Supported versions
