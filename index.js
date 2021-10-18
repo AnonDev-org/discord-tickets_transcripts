@@ -229,18 +229,20 @@ const uploadToHastebin = async (code, domain, format) => {
   const response = await fetch(`${domain}/documents`, {
     method: "POST",
     body: code.toString(),
+    headers: { "Content-Type": "text/plain" }
   });
 
   if (response.ok) {
     console.log(response.json())
     const { key } = await response.json();
+    if(!key) throw new Error(`Key is missing in response object (status ${response.status})`)
     console.log(key)
     const parsedURL = url.parse(`${domain}/${key}.${format ? format : "txt"}`);
   //  this.client.log.info(`Uploaded transcript to hastebin server`, parsedURL)
     return parsedURL;
   } else {
     throw new Error(
-      `Could not PORT to ${domain}/documents (status: ${response.status})`
+      `Could not POST to ${domain}/documents (status: ${response.status})`
     );
   }
 };
