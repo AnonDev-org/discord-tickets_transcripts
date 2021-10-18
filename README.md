@@ -26,9 +26,7 @@ Due to its simplicity, this plugin does not support localisation and is only ava
 
 - English (Great Britain)
 
-## Screenshots
-
-![Screenshot of a text file](https://static.eartharoid.me/sharex/21/08/Code_7ZkF4zEEeA.png "Screenshot of a text file")
+Feel free to fork it and translate it if you need.
 
 ## Installation
 
