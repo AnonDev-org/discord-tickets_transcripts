@@ -73,6 +73,7 @@ Check Installation for example how to configure the plugin, the available option
 | disabled_servers        | Array of servers where you don't want to get and log transcripts, you can leave it blank - `[]` |Array, optional|
  hastebin_url | URL of your custom hastebin server (with protocol and without slash at the end), by default it's `https://hastebin.com`| String, optional |
  pastebin_api_key | Your Developer API key from https://pastebin.com/doc_api | String, required (when type is set to `pastebin`)|
+ pastebin_raw_url | Return raw link of the paste uploaded to Pastebin (`true` by default) |  Boolean, optional |
 
 
 ## Information
