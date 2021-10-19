@@ -58,6 +58,15 @@ module.exports = (Plugin) =>
             this.client.cryptr.decrypt(creator.display_name)
           )
           .replace(/{+\s?num(ber)?\s?}+/gi, ticket.number);
+        
+        if(!this.config.disable_ascii) { lines.push(`  _____ _      _        _     _____                              _       _   
+ |_   _(_) ___| | _____| |_  |_   _| __ __ _ _ __  ___  ___ _ __(_)_ __ | |_ 
+   | | | |/ __| |/ / _ \ __|   | || '__/ _` | '_ \/ __|/ __| '__| | '_ \| __|
+   | | | | (__|   <  __/ |_    | || | | (_| | | | \__ \ (__| |  | | |_) | |_ 
+   |_| |_|\___|_|\_\___|\__|   |_||_|  \__,_|_| |_|___/\___|_|  |_| .__/ \__|
+                                                                  |_|        `)
+                                                                  
+      }
 
         lines.push(
           `Ticket Transcript\n--------------------------------------------------------------------\nID: ${
@@ -296,8 +305,8 @@ const uploadToPastebin = async (text, apikey, format, title) => {
   const key = await response.data;
   if (!key)
     throw new Error(`Response data is missing (status ${response.status})`);
-  if (!isValidUrl(key))
-    throw new Error(`Response data is not valid URL (${response.data})`);
+  if (!key.includes("https://pastebin.com/"))
+    throw new Error(`Response data is not valid Pastebin URL (${response.data})`);
   const parsedURL = key;
   // this.client.log.info(`Uploaded transcript to Pastebin`, parsedURL)
   return parsedURL;
