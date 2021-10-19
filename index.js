@@ -192,7 +192,7 @@ module.exports = (Plugin) =>
                 );
                 this.client.log.error(err);
               });
-              embed.addField("Transcript", `[here](${haste})`, true);
+              embed.addField("Transcript", `*Hastebin* [here](${haste})`, true);
               transcript = { embeds: [embed] };
             }
             if (this.config.type && this.config.type == "pastebin") {
@@ -211,7 +211,7 @@ module.exports = (Plugin) =>
                 );
                 this.client.log.error(err);
               });
-              embed.addField("Transcript", `[here](${paste})`, true);
+              embed.addField("Transcript", `*Pastebin* [here](${paste})`, true);
               transcript = { embeds: [embed] };
             }
 
