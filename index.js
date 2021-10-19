@@ -64,7 +64,7 @@ module.exports = (Plugin) =>
       }
 
         lines.push(
-          `Ticket Transcripts plugin v${require("./package.json").version} by AnonDev (https://anon.is-a.dev)\n--------------------------------------------------------------------\nID: ${
+          `Ticket Transcripts plugin v${require("./package.json").version} by AnonDev (https://anon.is-a.dev)\n-----------------------------------------------------------------------------------\nID: ${
           ticket.number
           } (#${channel_name})\nCreated (opened) by: ${this.client.cryptr.decrypt(
             creator.username
@@ -103,7 +103,7 @@ module.exports = (Plugin) =>
         }
 
         lines.push(
-          `--------------------------------------------------------------------`
+          `-----------------------------------------------------------------------------------`
         );
 
         const messages = await this.client.db.models.Message.findAll({
