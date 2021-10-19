@@ -53,11 +53,11 @@ module.exports = (Plugin) =>
         );
         lines.push(
           `Ticket Transcript\n--------------------------------------------------------------------\nID: ${
-            ticket.number
+          ticket.number
           }\nCreated (opened) by: ${this.client.cryptr.decrypt(
             creator.username
           )}#${creator.discriminator} (${
-            ticket.creator || "?"
+          ticket.creator || "?"
           })\nCreated (opened) at: ${ticketCreatedAt}`
         );
         if (ticket.closed_by) {
@@ -71,13 +71,13 @@ module.exports = (Plugin) =>
 
         if (closer) {
           let ticketClosedAt = dtf.fill(
-            "DD-MM-YYYY HH:mm:ss",
+            "DD.MM.YYYY HH:mm:ss",
             new Date(ticket.updatedAt),
             true
           );
           lines.push(
             `Closed by: ${this.client.cryptr.decrypt(closer.username)}#${
-              closer.discriminator
+            closer.discriminator
             } (${ticket.closed_by || "?"})\nClosed at: ${ticketClosedAt}`
           );
         }
@@ -109,7 +109,7 @@ module.exports = (Plugin) =>
           if (!user) continue;
 
           const timestamp = dtf.fill(
-            "DD-MM-YYYY HH:mm:ss",
+            "DD.MM.YYYY HH:mm:ss",
             new Date(ticket.createdAt),
             true
           );
@@ -117,10 +117,10 @@ module.exports = (Plugin) =>
           const display_name = this.client.cryptr.decrypt(user.display_name);
           const data = JSON.parse(this.client.cryptr.decrypt(message.data));
           let content = data.content ? data.content.replace(/\n/g, "\n\t") : "";
-          data.attachments?.forEach((a) => {
+          data.attachments ?.forEach((a) => {
             content += "\n\t" + a.url;
           });
-          data.embeds?.forEach(() => {
+          data.embeds ?.forEach(() => {
             content += "\n\t[embedded content]";
           });
           lines.push(
@@ -224,25 +224,28 @@ module.exports = (Plugin) =>
             );
             this.client.log.error(error);
           }
+
+          if (this.config.send_to_user && this.config.send_to_user == true) {
+            try {
+              const user = await this.client.users.fetch(ticket.creator);
+              if (!transcript)
+                return this.client.log.warn("Transcript object is missing");
+              user.send(transcript);
+            } catch (error) {
+              this.client.log.warn(
+                "Failed to send ticket transcript to the ticket creator"
+              );
+              this.client.log.error(error);
+            }
+          }
+
         }
 
-        if (this.config.send_to_user && this.config.send_to_user == true) {
-          try {
-            const user = await this.client.users.fetch(ticket.creator);
-            if (!transcript)
-              return this.client.log.warn("Transcript object is missing");
-            user.send(transcript);
-          } catch (error) {
-            this.client.log.warn(
-              "Failed to send ticket transcript to the ticket creator"
-            );
-            this.client.log.error(error);
-          }
-        }
+
       });
     }
 
-    load() {}
+    load() { }
   };
 
 const uploadToHastebin = async (text, domain, format) => {
@@ -250,10 +253,10 @@ const uploadToHastebin = async (text, domain, format) => {
     .post(`${domain}/documents`, text, {
       headers: { "Content-Type": "text/plain" },
     })
-    .catch(function (error) {
+    .catch(function(error) {
       if (error.response)
         throw new Error(
-          `Could not POST to ${domain}/documents (status: ${error.response.status})`
+          `Could not POST to ${domain}/documents (status: ${error.response.status}) - ${error.response.data}`
         );
       throw new Error(
         `Could not POST to ${domain}/documents - ${error.message}`
@@ -264,7 +267,7 @@ const uploadToHastebin = async (text, domain, format) => {
     throw new Error(
       `Key is missing in response object (status ${response.status})`
     );
-  const parsedURL = `https://${domain}/${key}.${format ? format : "txt"}`;
+  const parsedURL = `${domain}/${key}.${format ? format : "txt"}`;
   // this.client.log.info(`Uploaded transcript to hastebin server`, parsedURL)
   return parsedURL;
 };
@@ -280,7 +283,7 @@ const uploadToPastebin = async (text, apikey, format, title) => {
 
   let response = await axios
     .post(`https://pastebin.com/api/api_post.php`, params, {})
-    .catch(function (error) {
+    .catch(function(error) {
       if (error.response)
         throw new Error(
           `Could not POST to Pastebin (status: ${error.response.status}) - ${error.response.data}`
