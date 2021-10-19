@@ -214,7 +214,7 @@ module.exports = (Plugin) =>
                 lines.join("\n"),
                 this.config.pastebin_api_key,
                 "text",
-                `Ticket Transcript #${ticket.number}`
+                `Ticket Transcript #${ticket.number}`, this.config.pastebin_raw_url || true
               ).catch((err) => {
                 this.client.log.warn(
                   "Failed to upload ticket transcript to Pastebin"
@@ -279,7 +279,7 @@ const uploadToHastebin = async (text, domain, format) => {
   return parsedURL;
 };
 
-const uploadToPastebin = async (text, apikey, format, title) => {
+const uploadToPastebin = async (text, apikey, format, title, pastebin_raw_url) => {
   const params = new URLSearchParams();
   params.append("api_option", "paste");
   params.append("api_dev_key", apikey);
@@ -304,6 +304,7 @@ const uploadToPastebin = async (text, apikey, format, title) => {
     throw new Error(`Response data is not valid Pastebin URL (${response.data})`);
   const parsedURL = key;
   // this.client.log.info(`Uploaded transcript to Pastebin`, parsedURL)
+  if(pastebin_raw_url ? pastebin_raw_url : true == true) return `https://pastebin.com/raw/${parsedURL.split("/")[3]}`
   return parsedURL;
 };
 
