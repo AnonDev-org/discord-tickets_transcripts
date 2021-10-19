@@ -51,13 +51,21 @@ module.exports = (Plugin) =>
           new Date(ticket.createdAt),
           true
         );
+
+        const channel_name = category.name_format
+          .replace(
+            /{+\s?(user)?name\s?}+/gi,
+            this.client.cryptr.decrypt(creator.display_name)
+          )
+          .replace(/{+\s?num(ber)?\s?}+/gi, ticket.number);
+
         lines.push(
           `Ticket Transcript\n--------------------------------------------------------------------\nID: ${
-          ticket.number
-          }\nCreated (opened) by: ${this.client.cryptr.decrypt(
+            ticket.number
+          } (${channel_name})\nCreated (opened) by: ${this.client.cryptr.decrypt(
             creator.username
           )}#${creator.discriminator} (${
-          ticket.creator || "?"
+            ticket.creator || "?"
           })\nCreated (opened) at: ${ticketCreatedAt}`
         );
         if (ticket.closed_by) {
@@ -77,7 +85,7 @@ module.exports = (Plugin) =>
           );
           lines.push(
             `Closed by: ${this.client.cryptr.decrypt(closer.username)}#${
-            closer.discriminator
+              closer.discriminator
             } (${ticket.closed_by || "?"})\nClosed at: ${ticketClosedAt}`
           );
         }
@@ -117,10 +125,10 @@ module.exports = (Plugin) =>
           const display_name = this.client.cryptr.decrypt(user.display_name);
           const data = JSON.parse(this.client.cryptr.decrypt(message.data));
           let content = data.content ? data.content.replace(/\n/g, "\n\t") : "";
-          data.attachments ?.forEach((a) => {
+          data.attachments?.forEach((a) => {
             content += "\n\t" + a.url;
           });
-          data.embeds ?.forEach(() => {
+          data.embeds?.forEach(() => {
             content += "\n\t[embedded content]";
           });
           lines.push(
@@ -128,23 +136,18 @@ module.exports = (Plugin) =>
           );
         }
 
-        const channel_name = category.name_format
-          .replace(
-            /{+\s?(user)?name\s?}+/gi,
-            this.client.cryptr.decrypt(creator.display_name)
-          )
-          .replace(/{+\s?num(ber)?\s?}+/gi, ticket.number);
-
         if (this.config.channels[guild.id]) {
           try {
             const g = await this.client.guilds.fetch(guild.id);
             const embed = new MessageEmbed()
               .setColor(guild.colour)
               .setTitle(`Ticket Closed`)
-              .addField("ID", `${ticket.number}`, true)
+              .addField("ID", `${ticket.number} (${channel_name})`, true)
               .addField("Creator", `<@${ticket.creator}>`, true)
               .setTimestamp()
               .setFooter(guild.footer, g.iconURL());
+
+            let transcript;
 
             if (ticket.topic)
               embed.addField(
@@ -165,7 +168,6 @@ module.exports = (Plugin) =>
               this.config.channels[guild.id]
             );
             if (!log_channel) return;
-            let transcript;
 
             if (this.config.type && this.config.type == "attachment") {
               const attachment = new MessageAttachment(
@@ -238,14 +240,11 @@ module.exports = (Plugin) =>
               this.client.log.error(error);
             }
           }
-
         }
-
-
       });
     }
 
-    load() { }
+    load() {}
   };
 
 const uploadToHastebin = async (text, domain, format) => {
@@ -253,7 +252,7 @@ const uploadToHastebin = async (text, domain, format) => {
     .post(`${domain}/documents`, text, {
       headers: { "Content-Type": "text/plain" },
     })
-    .catch(function(error) {
+    .catch(function (error) {
       if (error.response)
         throw new Error(
           `Could not POST to ${domain}/documents (status: ${error.response.status}) - ${error.response.data}`
@@ -283,7 +282,7 @@ const uploadToPastebin = async (text, apikey, format, title) => {
 
   let response = await axios
     .post(`https://pastebin.com/api/api_post.php`, params, {})
-    .catch(function(error) {
+    .catch(function (error) {
       if (error.response)
         throw new Error(
           `Could not POST to Pastebin (status: ${error.response.status}) - ${error.response.data}`
