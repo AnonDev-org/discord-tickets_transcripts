@@ -158,7 +158,7 @@ module.exports = (Plugin) =>
               );
             }
             if (closer) {
-              embed.addField("Closed by", `<@${ticket.closed_by}>`, true);]
+              embed.addField("Closed by", `<@${ticket.closed_by}>`, true);
             }
             if (ticket.closed_reason) {
               embed.addField(
