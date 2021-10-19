@@ -20,9 +20,9 @@
     "@eartharoid/dtf": "^2.0.0",
     "discord.js": "^13.2.0",
     "fs-extra": "^9.1.0",
-    "node-fetch": "^2.6.2",
     "url": "^0.11.0",
-    "form-data": "^4.0.0"
+    "form-data": "^4.0.0",
+    "axios": "^0.23.0"
   },
   "devDependencies": {
     "eslint": "^7.32.0"
