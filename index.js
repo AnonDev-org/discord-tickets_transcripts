@@ -62,7 +62,7 @@ module.exports = (Plugin) =>
         lines.push(
           `Ticket Transcript\n--------------------------------------------------------------------\nID: ${
           ticket.number
-          } (${channel_name})\nCreated (opened) by: ${this.client.cryptr.decrypt(
+          } (#${channel_name})\nCreated (opened) by: ${this.client.cryptr.decrypt(
             creator.username
           )}#${creator.discriminator} (${
           ticket.creator || "?"
@@ -142,7 +142,7 @@ module.exports = (Plugin) =>
             const embed = new MessageEmbed()
               .setColor(guild.colour)
               .setTitle(`Ticket Closed`)
-              .addField("ID", `${ticket.number} (${channel_name})`, true)
+              .addField("ID", `${ticket.number} (#${channel_name})`, true)
               .addField("Creator", `<@${ticket.creator}>`, true)
               .addField("Created (opened) at", `${ticketCreatedAt}`)
               .setTimestamp()
