@@ -1,7 +1,7 @@
 const DTF = require("@eartharoid/dtf");
 const dtf = new DTF();
 const { MessageAttachment, MessageEmbed } = require("discord.js");
-const fetch = require("node-fetch");
+const axios = require("axios");
 const url = require("url");
 
 module.exports = (Plugin) =>
@@ -188,13 +188,33 @@ module.exports = (Plugin) =>
                 "txt"
               ).catch((err) => {
                 this.client.log.warn(
-                  "Failed to upload ticket transcript to hastebin"
+                  "Failed to upload ticket transcript to Hastebin"
                 );
                 this.client.log.error(err);
               });
               embed.addField("Transcript", `[here](${haste})`, true);
               transcript = { embeds: [embed] };
             }
+            if (this.config.type && this.config.type == "pastebin") {
+              if (!this.config.pastebin_api_key)
+                return this.client.log.warn(
+                  "You have not provided Pastebin API key so I can't upload ticket transcript to Pastebin"
+                );
+              const paste = await uploadToPastebin(
+                lines.join("\n"),
+                this.config.pastebin_api_key,
+                "text",
+                `Ticket Transcript #${ticket.number}`
+              ).catch((err) => {
+                this.client.log.warn(
+                  "Failed to upload ticket transcript to Pastebin"
+                );
+                this.client.log.error(err);
+              });
+              embed.addField("Transcript", `[here](${paste})`, true);
+              transcript = { embeds: [embed] };
+            }
+
             if (!transcript)
               return this.client.log.warn("Transcript object is missing");
             log_channel.send(transcript);
@@ -225,27 +245,68 @@ module.exports = (Plugin) =>
     load() {}
   };
 
-const uploadToHastebin = async (code, domain, format) => {
-  var FormData = require('form-data');
-  var formdata = new FormData();
-  formdata.append('data', code);
-  const response = await fetch(`${domain}/documents`, {
-    method: "POST",
-    body: formdata ,
-    headers: { "Content-Type": "multipart/form-data" }
-  });
-
-  if (response.ok) {
-    console.log(response.json())
-    const { key } = await response.json();
-    if(!key) throw new Error(`Key is missing in response object (status ${response.status})`)
-    console.log(key)
-    const parsedURL = url.parse(`${domain}/${key}.${format ? format : "txt"}`);
-  //  this.client.log.info(`Uploaded transcript to hastebin server`, parsedURL)
-    return parsedURL;
-  } else {
+const uploadToHastebin = async (text, domain, format) => {
+  let response = await axios
+    .post(`${domain}/documents`, text, {
+      headers: { "Content-Type": "text/plain" },
+    })
+    .catch(function (error) {
+      if (error.response)
+        throw new Error(
+          `Could not POST to ${domain}/documents (status: ${error.response.status})`
+        );
+      throw new Error(
+        `Could not POST to ${domain}/documents - ${error.message}`
+      );
+    });
+  const { key } = await response.data;
+  if (!key)
     throw new Error(
-      `Could not POST to ${domain}/documents (status: ${response.status})`
+      `Key is missing in response object (status ${response.status})`
     );
+  const parsedURL = `https://${domain}/${key}.${format ? format : "txt"}`;
+  // this.client.log.info(`Uploaded transcript to hastebin server`, parsedURL)
+  return parsedURL;
+};
+
+const uploadToPastebin = async (text, apikey, format, title) => {
+  const params = new URLSearchParams();
+  params.append("api_option", "paste");
+  params.append("api_dev_key", apikey);
+  params.append("api_paste_code", text);
+  params.append("api_paste_private", 1);
+  params.append("api_paste_name", title ? title : "Untitled Paste");
+  params.append("api_paste_format", format);
+
+  let response = await axios
+    .post(`https://pastebin.com/api/api_post.php`, params, {})
+    .catch(function (error) {
+      if (error.response)
+        throw new Error(
+          `Could not POST to Pastebin (status: ${error.response.status}) - ${error.response.data}`
+        );
+      throw new Error(`Could not POST to Pastebin - ${error.message}`);
+    });
+  const key = await response.data;
+  if (!key)
+    throw new Error(`Response data is missing (status ${response.status})`);
+  if (!isValidUrl(key))
+    throw new Error(`Response data is not valid URL (${response.data})`);
+  const parsedURL = key;
+  // this.client.log.info(`Uploaded transcript to Pastebin`, parsedURL)
+  return parsedURL;
+};
+
+const isValidUrl = (s, protocols) => {
+  const { URL } = require("url");
+  try {
+    url = new URL(s);
+    return protocols
+      ? url.protocol
+        ? protocols.map((x) => `${x.toLowerCase()}:`).includes(url.protocol)
+        : false
+      : true;
+  } catch (err) {
+    return false;
   }
 };
