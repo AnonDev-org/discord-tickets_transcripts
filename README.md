@@ -15,6 +15,7 @@ It may not work on versions not listed above.
 ## Features
 
 If `log_messages` is enabled, this plugin sends embed with ticket transcript to log channel and to ticket creator (optional).
+Ticket transcrips can be sent as
 
 ### Commands
 
@@ -48,7 +49,7 @@ Feel free to fork it and translate it if you need.
    		channels: {
    			'<GUILD ID>': '<GUILD CHANNEL ID>'
    		},
-   		type : "attachment", // attachment or hastebin
+   		type : "attachment", // attachment, hastebin or pastebin
    		send_to_user: false, // true or false
    		disabled_servers: [] // array of servers where you don't want to log transcripts
 
@@ -67,11 +68,11 @@ Check Installation for example how to configure the plugin, the available option
 | Name            | Instructions  | Type                                                                                                                                                                                     
 | :-------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |  :-------------- |
 | channels        | IDs of channels where do you want to send transcripts in the form of `'<GUILD ID>': '<GUILD CHANNEL ID>'`  |  Object, required |                                                                                 |
-| type            | Type of transcripts, possible options are `attachment` (will upload it as attachment with the log embed), `hastebin` (will upload it to hastebin server and add link to it in the log embed) | String, required |
+| type            | Type of transcripts, possible options are `attachment` (will upload it as attachment with the log embed), `hastebin` (will upload it to Hastebin server and add link in the log embed), `pastebin` (will upload it to Pastebin and add link in the log embed) | String, required |
 | send_to_user    | Do you want to DM the user with the transcript (log embed) - `true` or `false`                                                                                                              | Boolean, required |
 | disabled_servers        | Array of servers where you don't want to get and log transcripts, you can leave it blank - `[]` |Array, optional|
  hastebin_url | URL of your custom hastebin server (with protocol and without slash at the end), by default it's `https://hastebin.com`| String, optional |
-
+ pastebin_api_key | Your Developer API key from https://pastebin.com/doc_api | String, required (when type is set to `pastebin`)|
 
 
 ## Information
