@@ -58,18 +58,22 @@ module.exports = (Plugin) =>
             this.client.cryptr.decrypt(creator.display_name)
           )
           .replace(/{+\s?num(ber)?\s?}+/gi, ticket.number);
-        
-        if(!this.config.disable_ascii) { 
-          lines.push("  _____ _      _        _     _____                              _       _       \n |_   _(_) ___| | _____| |_  |_   _| __ __ _ _ __  ___  ___ _ __(_)_ __ | |_ ___ \n   | | | |/ __| |/ / _ \\ __|   | || \'__/ _` | \'_ \\/ __|/ __| \'__| | \'_ \\| __/ __|\n   | | | | (__|   <  __/ |_    | || | | (_| | | | \\__ \\ (__| |  | | |_) | |_\\__ \\\n   |_| |_|\\___|_|\\_\\___|\\__|   |_||_|  \\__,_|_| |_|___/\\___|_|  |_| .__/ \\__|___/\n                                                                  |_|            ")
-      }
+
+        if (!this.config.disable_ascii) {
+          lines.push(
+            "  _____ _      _        _     _____                              _       _       \n |_   _(_) ___| | _____| |_  |_   _| __ __ _ _ __  ___  ___ _ __(_)_ __ | |_ ___ \n   | | | |/ __| |/ / _ \\ __|   | || '__/ _` | '_ \\/ __|/ __| '__| | '_ \\| __/ __|\n   | | | | (__|   <  __/ |_    | || | | (_| | | | \\__ \\ (__| |  | | |_) | |_\\__ \\\n   |_| |_|\\___|_|\\_\\___|\\__|   |_||_|  \\__,_|_| |_|___/\\___|_|  |_| .__/ \\__|___/\n                                                                  |_|            "
+          );
+        }
 
         lines.push(
-          `Ticket Transcripts plugin v${require("./package.json").version} by AnonDev (https://anon.is-a.dev)\n-----------------------------------------------------------------------------------\nID: ${
-          ticket.number
+          `Ticket Transcripts plugin v${
+            require("./package.json").version
+          } by AnonDev (https://anon.is-a.dev)\n-----------------------------------------------------------------------------------\nID: ${
+            ticket.number
           } (#${channel_name})\nCreated (opened) by: ${this.client.cryptr.decrypt(
             creator.username
           )}#${creator.discriminator} (${
-          ticket.creator || "?"
+            ticket.creator || "?"
           })\nCreated (opened) at: ${ticketCreatedAt}`
         );
         if (ticket.closed_by) {
@@ -89,7 +93,7 @@ module.exports = (Plugin) =>
           );
           lines.push(
             `Closed by: ${this.client.cryptr.decrypt(closer.username)}#${
-            closer.discriminator
+              closer.discriminator
             } (${ticket.closed_by || "?"})\nClosed at: ${ticketClosedAt}`
           );
         }
@@ -129,10 +133,10 @@ module.exports = (Plugin) =>
           const display_name = this.client.cryptr.decrypt(user.display_name);
           const data = JSON.parse(this.client.cryptr.decrypt(message.data));
           let content = data.content ? data.content.replace(/\n/g, "\n\t") : "";
-          data.attachments ?.forEach((a) => {
+          data.attachments?.forEach((a) => {
             content += "\n\t" + a.url;
           });
-          data.embeds ?.forEach(() => {
+          data.embeds?.forEach(() => {
             content += "\n\t[embedded content]";
           });
           lines.push(
@@ -202,7 +206,11 @@ module.exports = (Plugin) =>
                 );
                 this.client.log.error(err);
               });
-              embed.addField("Transcript", `*Uploaded to Hastebin* - [here](${haste})`, true);
+              embed.addField(
+                "Transcript",
+                `*Uploaded to Hastebin* - [here](${haste})`,
+                true
+              );
               transcript = { embeds: [embed] };
             }
             if (this.config.type && this.config.type == "pastebin") {
@@ -214,14 +222,19 @@ module.exports = (Plugin) =>
                 lines.join("\n"),
                 this.config.pastebin_api_key,
                 "text",
-                `Ticket Transcript #${ticket.number}`, this.config.pastebin_raw_url || true
+                `Ticket Transcript #${ticket.number}`,
+                this.config.pastebin_raw_url || true
               ).catch((err) => {
                 this.client.log.warn(
                   "Failed to upload ticket transcript to Pastebin"
                 );
                 this.client.log.error(err);
               });
-              embed.addField("Transcript", `*Uploaded to Pastebin* [here](${paste})`, true);
+              embed.addField(
+                "Transcript",
+                `*Uploaded to Pastebin* [here](${paste})`,
+                true
+              );
               transcript = { embeds: [embed] };
             }
 
@@ -252,7 +265,7 @@ module.exports = (Plugin) =>
       });
     }
 
-    load() { }
+    load() {}
   };
 
 const uploadToHastebin = async (text, domain, format) => {
@@ -260,7 +273,7 @@ const uploadToHastebin = async (text, domain, format) => {
     .post(`${domain}/documents`, text, {
       headers: { "Content-Type": "text/plain" },
     })
-    .catch(function(error) {
+    .catch(function (error) {
       if (error.response)
         throw new Error(
           `Could not POST to ${domain}/documents (status: ${error.response.status}) - ${error.response.data}`
@@ -279,7 +292,13 @@ const uploadToHastebin = async (text, domain, format) => {
   return parsedURL;
 };
 
-const uploadToPastebin = async (text, apikey, format, title, pastebin_raw_url) => {
+const uploadToPastebin = async (
+  text,
+  apikey,
+  format,
+  title,
+  pastebin_raw_url
+) => {
   const params = new URLSearchParams();
   params.append("api_option", "paste");
   params.append("api_dev_key", apikey);
@@ -290,7 +309,7 @@ const uploadToPastebin = async (text, apikey, format, title, pastebin_raw_url) =
 
   let response = await axios
     .post(`https://pastebin.com/api/api_post.php`, params, {})
-    .catch(function(error) {
+    .catch(function (error) {
       if (error.response)
         throw new Error(
           `Could not POST to Pastebin (status: ${error.response.status}) - ${error.response.data}`
@@ -301,10 +320,13 @@ const uploadToPastebin = async (text, apikey, format, title, pastebin_raw_url) =
   if (!key)
     throw new Error(`Response data is missing (status ${response.status})`);
   if (!key.includes("https://pastebin.com/"))
-    throw new Error(`Response data is not valid Pastebin URL (${response.data})`);
+    throw new Error(
+      `Response data is not valid Pastebin URL (${response.data})`
+    );
   const parsedURL = key;
   // this.client.log.info(`Uploaded transcript to Pastebin`, parsedURL)
-  if(pastebin_raw_url ? pastebin_raw_url : true == true) return `https://pastebin.com/raw/${parsedURL.split("/")[3]}`
+  if (pastebin_raw_url ? pastebin_raw_url : true == true)
+    return `https://pastebin.com/raw/${parsedURL.split("/")[3]}`;
   return parsedURL;
 };
 
