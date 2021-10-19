@@ -1,6 +1,6 @@
 {
   "name": "AnonDev-org.discord-tickets_transcripts",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "A simple plugin for Discord Tickets which adds ticket transcripts (with ticket close logging).",
   "main": "index.js",
   "scripts": {
