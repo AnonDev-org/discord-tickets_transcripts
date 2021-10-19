@@ -144,7 +144,7 @@ module.exports = (Plugin) =>
               .setTitle(`Ticket Closed`)
               .addField("ID", `${ticket.number} (#${channel_name})`, true)
               .addField("Creator", `<@${ticket.creator}>`, true)
-              .addField("Created (opened) at", `${ticketCreatedAt}`)
+              .addField("Created (opened) at", `${ticketCreatedAt}`, true)
               .setTimestamp()
               .setFooter(guild.footer, g.iconURL());
 
