@@ -47,7 +47,7 @@ module.exports = (Plugin) =>
         const lines = [];
         let closer;
         let ticketCreatedAt = dtf.fill(
-          "DD-MM-YYYY HH:mm:ss",
+          "DD.MM.YYYY HH:mm:ss",
           new Date(ticket.createdAt),
           true
         );
@@ -61,11 +61,11 @@ module.exports = (Plugin) =>
 
         lines.push(
           `Ticket Transcript\n--------------------------------------------------------------------\nID: ${
-            ticket.number
+          ticket.number
           } (${channel_name})\nCreated (opened) by: ${this.client.cryptr.decrypt(
             creator.username
           )}#${creator.discriminator} (${
-            ticket.creator || "?"
+          ticket.creator || "?"
           })\nCreated (opened) at: ${ticketCreatedAt}`
         );
         if (ticket.closed_by) {
@@ -85,7 +85,7 @@ module.exports = (Plugin) =>
           );
           lines.push(
             `Closed by: ${this.client.cryptr.decrypt(closer.username)}#${
-              closer.discriminator
+            closer.discriminator
             } (${ticket.closed_by || "?"})\nClosed at: ${ticketClosedAt}`
           );
         }
@@ -125,10 +125,10 @@ module.exports = (Plugin) =>
           const display_name = this.client.cryptr.decrypt(user.display_name);
           const data = JSON.parse(this.client.cryptr.decrypt(message.data));
           let content = data.content ? data.content.replace(/\n/g, "\n\t") : "";
-          data.attachments?.forEach((a) => {
+          data.attachments ?.forEach((a) => {
             content += "\n\t" + a.url;
           });
-          data.embeds?.forEach(() => {
+          data.embeds ?.forEach(() => {
             content += "\n\t[embedded content]";
           });
           lines.push(
@@ -144,25 +144,29 @@ module.exports = (Plugin) =>
               .setTitle(`Ticket Closed`)
               .addField("ID", `${ticket.number} (${channel_name})`, true)
               .addField("Creator", `<@${ticket.creator}>`, true)
+              .addField("Created (opened) at", `${ticketCreatedAt}`)
               .setTimestamp()
               .setFooter(guild.footer, g.iconURL());
 
             let transcript;
 
-            if (ticket.topic)
+            if (ticket.topic) {
               embed.addField(
                 "Topic",
                 `\`${this.client.cryptr.decrypt(ticket.topic)}\``,
                 true
               );
-            if (closer)
-              embed.addField("Closed by", `<@${ticket.closed_by}>`, true);
-            if (ticket.closed_reason)
+            }
+            if (closer) {
+              embed.addField("Closed by", `<@${ticket.closed_by}>`, true);]
+            }
+            if (ticket.closed_reason) {
               embed.addField(
                 "Close reason",
                 `\`${this.client.cryptr.decrypt(ticket.closed_reason)}\``,
                 true
               );
+            }
 
             const log_channel = await this.client.channels.fetch(
               this.config.channels[guild.id]
@@ -244,7 +248,7 @@ module.exports = (Plugin) =>
       });
     }
 
-    load() {}
+    load() { }
   };
 
 const uploadToHastebin = async (text, domain, format) => {
@@ -252,7 +256,7 @@ const uploadToHastebin = async (text, domain, format) => {
     .post(`${domain}/documents`, text, {
       headers: { "Content-Type": "text/plain" },
     })
-    .catch(function (error) {
+    .catch(function(error) {
       if (error.response)
         throw new Error(
           `Could not POST to ${domain}/documents (status: ${error.response.status}) - ${error.response.data}`
@@ -282,7 +286,7 @@ const uploadToPastebin = async (text, apikey, format, title) => {
 
   let response = await axios
     .post(`https://pastebin.com/api/api_post.php`, params, {})
-    .catch(function (error) {
+    .catch(function(error) {
       if (error.response)
         throw new Error(
           `Could not POST to Pastebin (status: ${error.response.status}) - ${error.response.data}`
