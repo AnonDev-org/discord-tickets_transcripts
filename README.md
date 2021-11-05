@@ -74,6 +74,12 @@ Check Installation for example how to configure the plugin, the available option
  pastebin_raw_url | Return raw link of the paste uploaded to Pastebin (`true` by default) |  Boolean, optional |
 
 
+## Updating plugin
+It's really simple, just reinstall it using npm.
+
+- Run `npm i AnonDev-org/discord-tickets_transcripts --no-save`
+
+
 ## Information
 
 This is improved fork of [this](https://github.com/discord-tickets/text-transcripts) plugin.
