@@ -51,8 +51,6 @@ Feel free to fork it and translate it if you need.
    		},
    		type : "attachment", // attachment, hastebin or pastebin
    		send_to_user: false, // true or false
-   		disabled_servers: [] // array of servers where you don't want to log transcripts
-
    	},
    	locale: 'en-GB',
    	// ...
