@@ -3,6 +3,7 @@ const dtf = new DTF();
 const { MessageAttachment, MessageEmbed } = require("discord.js");
 const axios = require("axios");
 const url = require("url");
+const moment = require("moment");
 
 module.exports = (Plugin) =>
   class DemoPlugin extends Plugin {
@@ -31,7 +32,10 @@ module.exports = (Plugin) =>
           where: { id: category.guild },
         });
         if (!guild) return;
-        if (this.config.disabled_servers || [].includes(guild.id)) return;
+        if (this.config.disabled_servers || [].contains(String(guild.id)))
+          return this.client.log.warn(
+            `Ignoring ticket #${ticket.number} close because transcripts are disabled for guild with ID ${guild.id}`
+          );
 
         const creator = await this.client.db.models.UserEntity.findOne({
           where: {
@@ -70,7 +74,9 @@ module.exports = (Plugin) =>
             require("./package.json").version
           } by AnonDev (https://anon.is-a.dev)\n-----------------------------------------------------------------------------------\nID: ${
             ticket.number
-          } (#${channel_name})\nCreated (opened) by: ${this.client.cryptr.decrypt(
+          } (#${channel_name})\nCategory: ${
+            category.name || "?"
+          }\nCreated (opened) by: ${this.client.cryptr.decrypt(
             creator.username
           )}#${creator.discriminator} (${
             ticket.creator || "?"
@@ -84,21 +90,21 @@ module.exports = (Plugin) =>
             },
           });
         }
-
+        let ticketClosedAt = dtf.fill(
+          "DD.MM.YYYY HH:mm:ss",
+          new Date(ticket.updatedAt),
+          true
+        );
+        if (ticket.topic) {
+          lines.push(`Topic: ${this.client.cryptr.decrypt(ticket.topic)}`);
+        }
+        lines.push(`Closed at: ${ticketClosedAt}`);
         if (closer) {
-          let ticketClosedAt = dtf.fill(
-            "DD.MM.YYYY HH:mm:ss",
-            new Date(ticket.updatedAt),
-            true
-          );
           lines.push(
             `Closed by: ${this.client.cryptr.decrypt(closer.username)}#${
               closer.discriminator
-            } (${ticket.closed_by || "?"})\nClosed at: ${ticketClosedAt}`
+            } (${ticket.closed_by || "?"})`
           );
-        }
-        if (ticket.topic) {
-          lines.push(`Topic: ${this.client.cryptr.decrypt(ticket.topic)}`);
         }
         if (ticket.closed_reason) {
           lines.push(
@@ -150,9 +156,14 @@ module.exports = (Plugin) =>
             const embed = new MessageEmbed()
               .setColor(guild.colour)
               .setTitle(`Ticket Closed`)
-              .addField("ID", `${ticket.number} (#${channel_name})`, true)
+              .addField("ID", `\`${ticket.number}\` (#${channel_name})`, true)
+              .addField("Category", `${category.name || "?"}`, true)
               .addField("Creator", `<@${ticket.creator}>`, true)
-              .addField("Created (opened) at", `${ticketCreatedAt}`, true)
+              .addField(
+                "Created (opened) at",
+                `<t:${moment(new Date(ticket.createdAt)).format("X")}:f>`,
+                true
+              )
               .setTimestamp()
               .setFooter(guild.footer, g.iconURL());
 
@@ -165,6 +176,12 @@ module.exports = (Plugin) =>
                 true
               );
             }
+            embed.addField(
+              "Closed at",
+              `<t:${moment(new Date(ticket.updatedAt)).format("X")}:f>`,
+              true
+            );
+
             if (closer) {
               embed.addField("Closed by", `<@${ticket.closed_by}>`, true);
             }
@@ -342,4 +359,14 @@ const isValidUrl = (s, protocols) => {
   } catch (err) {
     return false;
   }
+};
+
+Array.prototype.contains = function (obj) {
+  var i = this.length;
+  while (i--) {
+    if (this[i] === obj) {
+      return true;
+    }
+  }
+  return false;
 };
