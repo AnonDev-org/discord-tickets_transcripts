@@ -215,7 +215,7 @@ module.exports = (Plugin) =>
                 lines.join("\n"),
                 this.config.hastebin_url
                   ? this.config.hastebin_url
-                  : "https://hastebin.com",
+                  : "https://haste.pinglik.eu",
                 "txt"
               ).catch((err) => {
                 this.client.log.warn(
