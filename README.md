@@ -70,12 +70,13 @@ Check Installation for example how to configure the plugin, the available option
 | send_to_user    | Do you want to DM the user with the transcript (log embed) - `true` or `false`                                                                                                              | Boolean, required |
 | disabled_servers        | Array of servers where you don't want to get and log transcripts, you can leave it blank - `[]` |Array, optional|
  hastebin_url | URL of your custom hastebin server (with protocol and without slash at the end), by default it's `https://haste.pinglik.eu`| String, optional |
- pastebin_api_key | Your Developer API key from https://pastebin.com/doc_api | String, required (when type is set to `pastebin`)|
- pastebin_raw_url | Return raw link of the paste uploaded to Pastebin (`true` by default) |  Boolean, optional |
+ pastebin_api_key | Your Developer API key from https://pastebin.com/doc_api | String, required (when type is set to `pastebin`) |
+ transcript_raw_url | Return raw link of the transcript uploaded to Pastebin/Hastebin (`false` by default) |  Boolean, optional |
+| send_transcript_to_user    | Do you want to DM the user also with the logs (transcript) - `true` or `false` (`true` by default, works only when `send_to_user` is `true`)                                                                                                            | Boolean, optional |
 
 
 ## Updating plugin
-It's really simple, just reinstall it using npm.
+It's really simple, just reinstall it using npm and restart your bot.
 
 - Run `npm i AnonDev-org/discord-tickets_transcripts --no-save`
 
@@ -91,3 +92,5 @@ If you need help you can open new modmail support thread on [Pinglik Support Ser
 If you would like to support me:<br>
 
 <a  href='https://ko-fi.com/J3J72WPRC'  target='__blank'><img  height='36'  style='border:0px;height:36px;'  src='https://cdn.ko-fi.com/cdn/kofi2.png?v=2'  border='0'  alt='Buy Me a Coffee at ko-fi.com'  /></a>
+
+Are you looking for hosting (you get 5 USD monthly for free) for your Discord Tickets bot? You can use Railway, check out my guide [here](https://github.com/AnonDev-org/discord_tickets-bot-railway).
