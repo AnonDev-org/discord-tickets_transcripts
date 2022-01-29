@@ -226,6 +226,7 @@ module.exports = (Plugin) =>
                   "Failed to upload ticket transcript to Hastebin"
                 );
                 this.client.log.error(err);
+                embed.addField(":x: Error", `Error while uploading transcript to Hastebin: \`${err.message}\``)
               });
               embed.addField(
                 "Transcript",
@@ -250,6 +251,7 @@ module.exports = (Plugin) =>
                   "Failed to upload ticket transcript to Pastebin"
                 );
                 this.client.log.error(err);
+                embed.addField(":x: Error", `Error while uploading transcript to Pastebin: \`${err.message}\``)
               });
               embed.addField(
                 "Transcript",
