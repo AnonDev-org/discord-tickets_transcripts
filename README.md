@@ -87,7 +87,7 @@ This is improved fork of [this](https://github.com/discord-tickets/text-transcri
 
 Developed by [AnonDev](https://anon.is-a.dev)
 
-If you need help you can open new modmail support thread on [Pinglik Support Server](https://go.anondev.ml/pinglik-support) and we will help you 😉
+If you need help you can join [Pinglik Support Server](https://pinglik.eu/support) and ask for help in `#💛｜coding-help-support` channel and we will help you 😉
 
 If you would like to support me:<br>
 
