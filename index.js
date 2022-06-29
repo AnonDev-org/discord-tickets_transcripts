@@ -16,7 +16,7 @@ module.exports = (Plugin) =>
 
     preload() {
       this.config = this.client.config[this.id];
-      checkUpdates(this.client)
+      checkUpdates(this.client);
 
       this.client.tickets.on("close", async (id) => {
         const ticket = await this.client.db.models.Ticket.findOne({
@@ -149,7 +149,13 @@ module.exports = (Plugin) =>
             content += "\n\t[embedded content]";
           });
           lines.push(
-            `${data.pinned ? "📌 " : ""}[${timestamp}] ${display_name} (${username}#${user.discriminator}): ${content} ${message.deleted ? "(deleted) " : ""}${message.edited ? "(edited) " : ""}`
+            `${
+              data.pinned ? "📌 " : ""
+            }[${timestamp}] ${display_name} (${username}#${
+              user.discriminator
+            }): ${content} ${message.deleted ? "(deleted) " : ""}${
+              message.edited ? "(edited) " : ""
+            }`
           );
         }
 
@@ -169,7 +175,6 @@ module.exports = (Plugin) =>
               )
               .setTimestamp()
               .setFooter(guild.footer, g.iconURL());
-
 
             if (ticket.topic) {
               embed.addField(
@@ -199,7 +204,6 @@ module.exports = (Plugin) =>
               this.config.channels[guild.id]
             );
             if (!log_channel) return;
-            await tempMap.set("transcript2", { embeds: [embed] });
 
             if (this.config.type && this.config.type == "attachment") {
               const attachment = new MessageAttachment(
@@ -211,7 +215,10 @@ module.exports = (Plugin) =>
                 "*Uploaded as attachment below*",
                 true
               );
-              tempMap.set("transcript", { embeds: [embed], files: [attachment] });
+              tempMap.set("transcript", {
+                embeds: [embed],
+                files: [attachment],
+              });
             }
             if (this.config.type && this.config.type == "hastebin") {
               const haste = await uploadToHastebin(
@@ -226,14 +233,31 @@ module.exports = (Plugin) =>
                   "Failed to upload ticket transcript to Hastebin"
                 );
                 this.client.log.error(err);
-                embed.addField(":x: Error", `Error while uploading transcript to Hastebin: \`${err.message}\``)
+                embed.addField(
+                  ":x: Error",
+                  `Error while uploading transcript to Hastebin: \`${err.message}\`\nUploaded transcript as attachment below.`
+                );
+                tempMap.set("hastebin_error", true);
               });
-              embed.addField(
-                "Transcript",
-                `*Uploaded to Hastebin* - [here](${haste})`,
-                true
-              );
-               tempMap.set("transcript", { embeds: [embed] });
+              let hastebinerror = tempMap.get("hastebin_error") || null;
+              if (hastebinerror) {
+                const attachment = new MessageAttachment(
+                  Buffer.from(lines.join("\n")),
+                  channel_name + ".txt"
+                );
+                tempMap.set("transcript", {
+                  embeds: [embed],
+                  files: [attachment],
+                });
+                tempMap.delete("hastebin_error");
+              } else {
+                embed.addField(
+                  "Transcript",
+                  `*Uploaded to Hastebin* - [here](${haste})`,
+                  true
+                );
+                tempMap.set("transcript", { embeds: [embed] });
+              }
             }
             if (this.config.type && this.config.type == "pastebin") {
               if (!this.config.pastebin_api_key)
@@ -251,16 +275,35 @@ module.exports = (Plugin) =>
                   "Failed to upload ticket transcript to Pastebin"
                 );
                 this.client.log.error(err);
-                embed.addField(":x: Error", `Error while uploading transcript to Pastebin: \`${err.message}\``)
+                embed.addField(
+                  ":x: Error",
+                  `Error while uploading transcript to Pastebin: \`${err.message}\`\nUploaded transcript as attachment below.`
+                );
+                tempMap.set("pastebin_error", true);
               });
-              embed.addField(
-                "Transcript",
-                `*Uploaded to Pastebin* [here](${paste})`,
-                true
-              );
-               tempMap.set("transcript", { embeds: [embed] });
+              let pastebinerror = tempMap.get("pastebin_error") || null;
+              if (pastebinerror) {
+                const attachment = new MessageAttachment(
+                  Buffer.from(lines.join("\n")),
+                  channel_name + ".txt"
+                );
+
+                tempMap.set("transcript", {
+                  embeds: [embed],
+                  files: [attachment],
+                });
+                tempMap.delete("pastebin_error");
+              } else {
+                embed.addField(
+                  "Transcript",
+                  `*Uploaded to Pastebin* [here](${paste})`,
+                  true
+                );
+                tempMap.set("transcript", { embeds: [embed] });
+              }
             }
-            let transcript = tempMap.get("transcript") || null
+
+            let transcript = tempMap.get("transcript") || null;
             if (!transcript)
               return this.client.log.warn("Transcript object is missing");
             log_channel.send(transcript);
@@ -274,16 +317,24 @@ module.exports = (Plugin) =>
           if (this.config.send_to_user && this.config.send_to_user == true) {
             try {
               const user = await this.client.users.fetch(ticket.creator);
-              let transcript = tempMap.get("transcript") || null
+              let transcript = tempMap.get("transcript") || null;
               if (!transcript)
-                return this.client.log.warn("Transcript object is missing in tempMap");
-              if(!this.config.send_transcript_to_user || true) {
-                let transcript2 = tempMap.get("transcript2")  || null
+                return this.client.log.warn(
+                  "Transcript object is missing in tempMap"
+                );
+              if (this.config.send_transcript_to_user == false) {
+                let transcriptembed = transcript.embeds[0];
+                transcriptembed.fields.pop();
+                let transcript2 = transcriptembed;
                 if (!transcript2)
-                return this.client.log.warn("Transcript2 (log embed without transcript) object is missing in tempMap");
-                return user.send(transcript2);
+                  return this.client.log.warn(
+                    "Transcript2 (log embed without transcript) object is missing"
+                  );
+                user.send({ embeds: [transcriptembed] });
+              } else {
+                console.log("send transcript to user is enabled");
+                user.send(transcript);
               }
-              return user.send(transcript);
             } catch (error) {
               this.client.log.warn(
                 "Failed to send ticket transcript to the ticket creator"
@@ -318,18 +369,13 @@ const uploadToHastebin = async (text, domain, format, raw_url) => {
       `Key is missing in response object (status ${response.status})`
     );
   const parsedURL = `${domain}/${key}.${format ? format : "txt"}`;
-  if (raw_url ? raw_url : null == true) return `${domain}/raw/${key}.${format ? format : "txt"}`;
+  if (raw_url ? raw_url : null == true)
+    return `${domain}/raw/${key}.${format ? format : "txt"}`;
   // this.client.log.info(`Uploaded transcript to hastebin server`, parsedURL)
   return parsedURL;
 };
 
-const uploadToPastebin = async (
-  text,
-  apikey,
-  format,
-  title,
-  raw_url
-) => {
+const uploadToPastebin = async (text, apikey, format, title, raw_url) => {
   const params = new URLSearchParams();
   params.append("api_option", "paste");
   params.append("api_dev_key", apikey);
@@ -375,45 +421,49 @@ const isValidUrl = (s, protocols) => {
   }
 };
 
-
 const checkUpdates = async (client) => {
-  const boxen = require('boxen');
-  const link = require('terminal-link');
-  const semver = require('semver');
-  const { format } = require('leekslazylogger');
+  const boxen = require("boxen");
+  const link = require("terminal-link");
+  const semver = require("semver");
+  const { format } = require("leekslazylogger");
 
-  const json =  (await axios({
-    method: "GET",
-    url: 'https://api.github.com/repos/AnonDev-org/discord-tickets_transcripts/releases',
-    responseType: "json"
-  })).data;
-  
-  const { version: current } = require('./package.json');
-	const update = json[0];
+  const json = (
+    await axios({
+      method: "GET",
+      url: "https://api.github.com/repos/AnonDev-org/discord-tickets_transcripts/releases",
+      responseType: "json",
+    })
+  ).data;
+
+  const { version: current } = require("./package.json");
+  const update = json[0];
   const latest = semver.coerce(update.tag_name);
   if (!semver.valid(latest)) return;
   if (semver.lt(current, latest)) {
-		client.log.notice(`There is an update available for Ticket Transcripts plugin by AnonDev (${current} -> ${update.tag_name})`);
+    client.log.notice(
+      `There is an update available for Ticket Transcripts plugin by AnonDev (${current} -> ${update.tag_name})`
+    );
 
-		const lines = [
-			`&k&6You are currently using &c${current}&6, the latest is &a${update.tag_name}&6.&r`,
-			`&k&6Download "&f${update.name}&6" from&r`,
-			link('&k&6the GitHub releases page.&r&6', 'https://github.com/AnonDev-org/discord-tickets_transcripts/releases/')
-		];
+    const lines = [
+      `&k&6You are currently using &c${current}&6, the latest is &a${update.tag_name}&6.&r`,
+      `&k&6Download "&f${update.name}&6" from&r`,
+      link(
+        "&k&6the GitHub releases page.&r&6",
+        "https://github.com/AnonDev-org/discord-tickets_transcripts/releases/"
+      ),
+    ];
 
-		console.log(
-			boxen(format(lines.join('\n')), {
-				align: 'center',
-				borderColor: 'yellow',
-				borderStyle: 'round',
-				margin: 1,
-				padding: 1
-			})
-		);
-	}
-
+    console.log(
+      boxen(format(lines.join("\n")), {
+        align: "center",
+        borderColor: "yellow",
+        borderStyle: "round",
+        margin: 1,
+        padding: 1,
+      })
+    );
+  }
 };
-
 
 Array.prototype.contains = function (obj) {
   var i = this.length;
